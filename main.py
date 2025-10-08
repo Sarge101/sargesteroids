@@ -40,6 +40,11 @@ Screen height: {SCREEN_HEIGHT}""")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+        
+        for asteroid in asteroid_group:
+            if asteroid.collides_with(player):
+                print("Game over!")
+                raise exit()
 
 pygame.quit()
 
