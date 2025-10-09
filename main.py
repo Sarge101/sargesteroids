@@ -16,15 +16,15 @@ Screen height: {SCREEN_HEIGHT}""")
     dt = 0
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    updatable_group = pygame.sprite.Group()
-    drawable_group = pygame.sprite.Group()
-    asteroid_group = pygame.sprite.Group()
+    updatables = pygame.sprite.Group()
+    drawables = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
 
-    Player.containers = (updatable_group, drawable_group)
-    Asteroid.containers = (asteroid_group, updatable_group, drawable_group)
-    AsteroidField.containers = updatable_group
-    Shot.containers = (shots, updatable_group, drawable_group)
+    Player.containers = (updatables, drawables)
+    Asteroid.containers = (asteroids, updatables, drawables)
+    AsteroidField.containers = updatables
+    Shot.containers = (shots, updatables, drawables)
 
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     asteroid_field = AsteroidField()
@@ -32,10 +32,10 @@ Screen height: {SCREEN_HEIGHT}""")
     running = True
     while running:
         screen.fill((0, 0, 0))
-        for drawable in drawable_group:
+        for drawable in drawables:
             drawable.draw(screen)
-        updatable_group.update(dt)
-        asteroid_group.update(dt)
+        updatables.update(dt)
+        asteroids.update(dt)
         pygame.display.flip()
         # limit the framerate to 60 FPS
         dt = clock.tick(60) / 1000
@@ -44,7 +44,11 @@ Screen height: {SCREEN_HEIGHT}""")
             if event.type == pygame.QUIT:
                 running = False
         
-        for asteroid in asteroid_group:
+        for asteroid in asteroids:
+            for shot in shots:
+                if shot.collides_with(asteroid):
+                    shot.kill()
+                    asteroid.kill()
             if asteroid.collides_with(player):
                 print("Game over!")
                 raise exit()
